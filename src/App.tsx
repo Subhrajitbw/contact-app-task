@@ -1,12 +1,10 @@
 // App.tsx
 import React from 'react';
-import { QueryClientProvider } from 'react-query';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import ChartsAndMaps from './components/ChartsAndMaps';
 import ContactForm from './components/ContactFrom';
 import Sidebar from './components/Sidebar';
-
 
 const App: React.FC = () => {
   return (
@@ -23,7 +21,6 @@ const App: React.FC = () => {
         </div>
       </div>
     </Router>
-
   );
 };
 
