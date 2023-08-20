@@ -69,7 +69,7 @@ const Dashboard: React.FC = () => {
   });
 
   if (!position || !casesData || !countryData) {
-    return <div>Loading...</div>;
+    return <div className="text-center">Loading...</div>;
   }
 
   const renderLineGraph = () => {
@@ -128,7 +128,7 @@ const Dashboard: React.FC = () => {
   const renderLeafletMap = () => {
     return (
       <div className="w-full md:w-1/2 p-4">
-        <MapContainer center={[position.lat, position.long]} zoom={4} style={{ height: window.innerWidth <= 640 ? "50vh" : "75vh", width: "100%" }}>
+        <MapContainer center={[position.lat, position.long]} zoom={4} style={{ height: window.innerWidth <= 640 ? "40vh" : "75vh", width: "100%", zIndex: 0 }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {countryData.map((country) => (
             <Marker

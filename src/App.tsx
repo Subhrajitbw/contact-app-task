@@ -11,6 +11,7 @@ const App: React.FC = () => {
     <Router>
       <div className="flex">
         <Sidebar />
+        </div>
         <div className="flex-grow">
           <div className="container mx-auto p-4">
             <Routes>
@@ -19,7 +20,7 @@ const App: React.FC = () => {
             </Routes>
           </div>
         </div>
-      </div>
+      
     </Router>
   );
 };
