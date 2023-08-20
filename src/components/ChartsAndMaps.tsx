@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import axios from "axios";
 import "tailwindcss/tailwind.css";
 import {
   Chart as ChartJS,
@@ -16,6 +15,8 @@ import {
 } from 'chart.js';
 import 'chart.js/auto'
 import L from 'leaflet';
+import { useQuery } from "react-query";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -38,31 +39,9 @@ interface CountryData {
 }
 
 const Dashboard: React.FC = () => {
-  const [casesData, setCasesData] = useState<number[]>([]);
-  const [countryData, setCountryData] = useState<CountryData[]>([]);
   const [position, setPosition] = useState<{ lat: number; long: number } | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const historicalResponse = await axios.get(
-          "https://disease.sh/v3/covid-19/historical/all?lastdays=all"
-        );
-        const { cases } = historicalResponse.data;
-        setCasesData(Object.values(cases));
-
-        const countryResponse = await axios.get(
-          "https://disease.sh/v3/covid-19/countries"
-        );
-        setCountryData(countryResponse.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (geoPosition) => {
@@ -71,19 +50,25 @@ const Dashboard: React.FC = () => {
         },
         (error) => {
           console.error(error);
-          setLoading(false);
         }
       );
     } else {
       console.error("Geolocation is not supported by this browser.");
-      setLoading(false);
     }
-
-
-    fetchData();
   }, []);
 
-  if (loading || !position || casesData.length === 0) {
+  const { data: casesData } = useQuery("casesData", async () => {
+    const historicalResponse = await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=all");
+    const { cases } = await historicalResponse.json();
+    return Object.values(cases);
+  });
+
+  const { data: countryData } = useQuery<CountryData[]>("countryData", async () => {
+    const countryResponse = await fetch("https://disease.sh/v3/covid-19/countries");
+    return await countryResponse.json();
+  });
+
+  if (!position || !casesData || !countryData) {
     return <div>Loading...</div>;
   }
 
@@ -143,7 +128,8 @@ const Dashboard: React.FC = () => {
   const renderLeafletMap = () => {
     return (
       <div className="w-full md:w-1/2 p-4">
-        <MapContainer center={[position.lat, position.long]} zoom={4} style={{ height: window.innerWidth <= 640 ? "50vh" : "75vh", width: "100%" }}>          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MapContainer center={[position.lat, position.long]} zoom={4} style={{ height: window.innerWidth <= 640 ? "50vh" : "75vh", width: "100%" }}>
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {countryData.map((country) => (
             <Marker
               key={country.country}
