@@ -106,7 +106,7 @@ const Dashboard: React.FC = () => {
         <Line
           data={data}
           height="200px"
-  width="200px"
+          width="200px"
           options={{
             responsive: true,
             interaction: {
@@ -143,8 +143,7 @@ const Dashboard: React.FC = () => {
   const renderLeafletMap = () => {
     return (
       <div className="w-full md:w-1/2 p-4">
-        <MapContainer center={[position.lat, position.long]} zoom={4} style={{ height: "75vh", width: "100%" }}>
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MapContainer center={[position.lat, position.long]} zoom={4} style={{ height: window.innerWidth <= 640 ? "50vh" : "75vh", width: "100%" }}>          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {countryData.map((country) => (
             <Marker
               key={country.country}
