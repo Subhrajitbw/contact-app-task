@@ -79,10 +79,6 @@ const Dashboard: React.FC = () => {
       setLoading(false);
     }
 
-    const customIcon = L.icon({
-      iconUrl: require('leaflet/dist/images/marker-icon.png').default,
-      shadowUrl: require('leaflet/dist/images/marker-shadow.png').default,
-    });
 
     fetchData();
   }, []);
