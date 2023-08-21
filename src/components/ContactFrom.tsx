@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { useDispatch } from 'react-redux';
 import { addContact, Contact } from '../contactSlice';
 import { v4 as uuidv4 } from 'uuid';
  import { useNavigate } from 'react-router-dom';
