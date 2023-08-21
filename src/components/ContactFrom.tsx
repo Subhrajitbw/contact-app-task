@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const ContactForm: React.FC = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector((state: RootState) => state.contacts.contacts);
   const navigate = useNavigate();
   const [formData, setFormData] = useState<Contact>({
     id: '',
