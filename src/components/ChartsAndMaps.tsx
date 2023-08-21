@@ -40,6 +40,15 @@ interface CountryData {
 
 const Dashboard: React.FC = () => {
   const [position, setPosition] = useState<{ lat: number; long: number } | null>(null);
+  const [lineGraphSize, setLineGraphSize] = useState({
+    height: "200px",
+    width: "200px"
+  });
+  const [mapContainerSize, setMapContainerSize] = useState({
+    height: "75vh", // Set a default height
+    width: "100%",
+    zIndex: 0
+  });
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -55,6 +64,28 @@ const Dashboard: React.FC = () => {
     } else {
       console.error("Geolocation is not supported by this browser.");
     }
+
+    const handleResize = () => {
+      const isSmallScreen = window.innerWidth <= 640;
+
+      setLineGraphSize({
+        height: isSmallScreen ? "200px" : "200px",
+        width: isSmallScreen ? "200px" : "200px"
+      });
+
+      setMapContainerSize({
+        height: isSmallScreen ? "40vh" : "75vh",
+        width: "100%",
+        zIndex: 0
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Call on initial render
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const { data: casesData } = useQuery("casesData", async () => {
@@ -90,8 +121,8 @@ const Dashboard: React.FC = () => {
       <div className="w-full md:w-1/2 p-4">
         <Line
           data={data}
-          height="200px"
-          width="200px"
+          height={lineGraphSize.height}
+          width={lineGraphSize.width}
           options={{
             responsive: true,
             interaction: {
@@ -109,13 +140,24 @@ const Dashboard: React.FC = () => {
                 type: 'linear' as const,
                 display: true,
                 position: 'left' as const,
-              },
-              y1: {
-                type: 'linear' as const,
-                display: true,
-                position: 'right' as const,
-                grid: {
-                  drawOnChartArea: false,
+                ticks: {
+                  padding: 10,
+                  callback: (value) => {
+                    if (window.innerWidth <= 640) {
+                      const numValue = typeof value === 'number' ? value : parseFloat(value);
+                      if (numValue >= 1_000_000_000) {
+                        return (numValue / 1_000_000_000).toFixed(1) + "B";
+                      } else if (numValue >= 1_000_000) {
+                        return (numValue / 1_000_000).toFixed(1) + "M";
+                      } else if (numValue >= 1_000) {
+                        return (numValue / 1_000).toFixed(1) + "K";
+                      } else {
+                        return value.toString();
+                      }
+                    } else {
+                      return value.toString();
+                    }
+                  },
                 },
               },
             },
@@ -128,7 +170,7 @@ const Dashboard: React.FC = () => {
   const renderLeafletMap = () => {
     return (
       <div className="w-full md:w-1/2 p-4">
-        <MapContainer center={[position.lat, position.long]} zoom={4} style={{ height: window.innerWidth <= 640 ? "40vh" : "75vh", width: "100%", zIndex: 0 }}>
+        <MapContainer center={[position?.lat || 0, position?.long || 0]} zoom={4} style={mapContainerSize}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {countryData.map((country) => (
             <Marker
@@ -156,7 +198,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="p-3">
-      <h1 className="text-2xl font-bold mb-4">COVID-19 Dashboard</h1>
+      <h1 className="text-center text-2xl font-bold mb-4">COVID-19 Dashboard</h1>
       <div className="flex flex-col md:flex-row md:space-x-4">
         {renderLineGraph()}
         {renderLeafletMap()}
