@@ -4,9 +4,7 @@ import { RootState } from '../store';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Contact, updateContact } from '../contactSlice';
 
-interface EditContactProps {
-  id: string;
-}
+
 
 const EditContact: React.FC<{}> = () => {
   const dispatch = useDispatch();
