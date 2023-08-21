@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { addContact, Contact } from '../contactSlice';
 import { v4 as uuidv4 } from 'uuid';
-import ContactList from './ContactList';
-import { useNavigate } from 'react-router-dom';
+ import { useNavigate } from 'react-router-dom';
 
 
 const ContactForm: React.FC = () => {
@@ -44,15 +43,6 @@ const ContactForm: React.FC = () => {
     navigate('/');
   };
 
-  const handleEdit = (contact: Contact) => {
-    // Implement the edit functionality
-    // You can open a modal or navigate to an edit page
-  };
-
-  const handleDelete = (id: string) => {
-    // Implement the delete functionality
-    // You can prompt the user for confirmation before deleting
-  };
 
   return (
     <div className="container mx-auto mt-8">
